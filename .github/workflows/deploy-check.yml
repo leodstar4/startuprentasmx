@@ -1,0 +1,46 @@
+# Deploy Check — Regla Cero gate en cada push a main
+#
+# Este workflow es un check rápido (< 1 min) independiente del CI completo.
+# Confirma que las citas legales siguen verificadas después de cada commit a main.
+# Es intencionalmente mínimo: no levanta frontend, no corre la suite completa.
+#
+# GitHub Secrets requeridos: NINGUNO.
+
+name: Deploy Check — Regla Cero
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  regla-cero:
+    name: "Gate — Regla Cero"
+    runs-on: ubuntu-latest
+
+    env:
+      # Demo corpus (mismo que el build de Render para demo).
+      # Para producción completa cambia a: MX_DATA_DIR=data/mx MX_CORPUS_DIR=corpus_mx
+      MX_DATA_DIR: data/mx_demo
+      MX_CORPUS_DIR: corpus_demo
+      OUT_DIR: /tmp/mx_verify
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: "Regla Cero — python -m mx.verify"
+        run: python -m mx.verify
+
+      - name: "Confirmar resultado"
+        run: |
+          echo "✅ Regla Cero: todas las citas verificadas."
+          echo "   Corpus demo: $MX_CORPUS_DIR  |  Data: $MX_DATA_DIR"

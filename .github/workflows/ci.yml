@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Backend — Regla Cero + Tests MX
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Gate — Regla Cero (corpus demo)
+        env:
+          MX_DATA_DIR: data/mx_demo
+          MX_CORPUS_DIR: corpus_demo
+          OUT_DIR: /tmp/mx_verify
+        run: |
+          python -m mx.verify
+          python -c "
+          import json, sys
+          d = json.load(open('/tmp/mx_verify/mx_validation.json'))
+          print(f'ok={d[\"ok\"]} verified={d[\"counts\"][\"verified\"]}/{d[\"counts\"][\"requirements\"]} failed={d[\"counts\"][\"failed\"]}')
+          sys.exit(0 if d['ok'] else 1)
+          "
+
+      - name: Tests MX (offline, deterministas)
+        run: python -m pytest -q
+
+  build-frontend:
+    name: Frontend — build TanStack Start
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: bun install
+
+      - name: Build frontend (demo)
+        working-directory: frontend
+        env:
+          VITE_IS_DEMO: "true"
+          # API_BASE vacío = mismo origen (monolito). No necesita VITE_API_BASE.
+        run: bun run build

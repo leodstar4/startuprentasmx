@@ -1,45 +1,58 @@
-# Render blueprint — Renta MX (Python monolith: FastAPI serves /mx/* AND the built frontend).
+# Render blueprint — Renta MX DEMO (monolito Python: FastAPI sirve /mx/* + frontend estático)
 #
-# Regla Cero: the build runs `python -m mx.verify`; a broken legal quote fails the deploy.
-# No ANTHROPIC_API_KEY, no LLM, no network at runtime.
+# DEMO: corpus recortado a CDMX + Federal (69 requisitos verificados) para caber en 512 MB RAM.
+# PRODUCCIÓN: quitar MX_DATA_DIR y MX_CORPUS_DIR → usa data/mx (229 reqs) + corpus_mx (85 docs).
+#             Cambiar plan a `starter` (~$7/mes) para evitar cold starts y tener 2 GB RAM.
 #
-# Persistence: set DATABASE_URL to a Supabase (or Render) Postgres connection string so listings,
-# contracts and signatures survive restarts (mx/store.py SqlStore). Without it, data lives on an
-# ephemeral disk and is lost on restart.
-#
-# "No se duerme": the `free` plan sleeps after ~15 min idle and its disk is ephemeral. For a site
-# that must stay up and keep data, use the `starter` plan AND a managed Postgres (Supabase free is
-# fine to start; it only pauses after ~1 week of total inactivity).
+# Regla Cero: python -m mx.verify corre en el build; una cita rota falla el deploy.
+# No LLM, no red en runtime.
+
 services:
   - type: web
-    name: renta-mx
+    name: renta-mx-demo
     runtime: python
-    plan: free          # change to `starter` (~$7/mo) for an always-on server
-    # Build: install Python deps, run the Regla Cero gate, then build the frontend (bun) so the
-    # monolith can serve it from frontend/.output/public.
-    buildCommand: |
-      pip install -r requirements.txt
-      python -m mx.verify
-      curl -fsSL https://bun.sh/install | bash
-      export PATH="$HOME/.bun/bin:$PATH"
-      cd frontend && bun install && bun run build && cd ..
-    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    plan: free    # ← cambiar a `starter` para producción (no se duerme, 2 GB RAM)
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      MX_DATA_DIR=data/mx_demo MX_CORPUS_DIR=corpus_demo OUT_DIR=/tmp/mx_verify python -m mx.verify &&
+      curl -fsSL https://bun.sh/install | bash &&
+      export PATH="$HOME/.bun/bin:$PATH" &&
+      cd frontend && VITE_IS_DEMO=true bun install && bun run build && cd ..
+    startCommand: >-
+      uvicorn api.main:app
+      --host 0.0.0.0
+      --port $PORT
+      --proxy-headers
+      --forwarded-allow-ips='*'
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
-        value: "3.12.10"
-      # Served by the monolith itself, so same-origin needs no CORS. Add extra EXACT origins here
-      # (comma-separated) only for split setups; *.pages.dev / lovable are allowed by regex.
+        value: "3.12"
+
+      # DEMO: corpus recortado. Quitar para producción completa.
+      - key: MX_DATA_DIR
+        value: data/mx_demo
+      - key: MX_CORPUS_DIR
+        value: corpus_demo
+
+      # Donde vive el build del frontend (StaticFiles en api/main.py).
+      - key: FRONTEND_DIST
+        value: frontend/.output/public
+
+      # Banner de demo en el frontend.
+      - key: VITE_IS_DEMO
+        value: "true"
+
+      # Orígenes CORS extra (el monolito sirve mismo origen; solo para dev split).
       - key: ALLOWED_ORIGINS
         value: ""
-      # Where the built frontend lives (served as StaticFiles by api/main.py).
-      - key: FRONTEND_DIST
-        value: "frontend/.output/public"
-      # Salt for the hashed client IP in /mx signature evidence (never the plain IP). Keep stable.
+
+      # Sal para el hash de IP en evidencia de firma. Render la genera; mantener estable.
       - key: MX_IP_SALT
         generateValue: true
-      # Persistent store (Supabase Postgres). Paste the connection string of your Supabase project
-      # (Settings -> Database -> Connection string -> URI; use the pooler host for serverless).
-      # Leave unset to run with the ephemeral JSON store (demo only).
+
+      # Base de datos persistente (Supabase Postgres).
+      # Pegar la connection string de: Supabase → Settings → Database → URI
+      # Sin definir = store JSON efímero (datos se pierden al reiniciar).
       - key: DATABASE_URL
         sync: false

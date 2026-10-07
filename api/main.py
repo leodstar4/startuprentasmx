@@ -50,11 +50,10 @@ def store():
 
 @asynccontextmanager
 async def _lifespan(_app):
-    # Warm the MX reference data once (tolerant: /mx/* answers 503 if data/corpus are missing).
-    try:
-        mx_data.current()
-    except Exception:
-        pass
+    # MX reference data loads lazily on the first request to /mx/* (mx.data.current()).
+    # We do NOT pre-load here to stay within the 512 MB RAM limit of the Render free tier:
+    # verifying 85 legal documents in memory spikes RAM during startup. The first /mx/* request
+    # will be slower (~5-10 s) but subsequent ones hit the lru_cache instantly.
     yield
 
 
@@ -80,13 +79,12 @@ app.include_router(mx_router)  # Renta MX routes (/mx/*); data loaded lazily, 50
 
 @app.get("/health")
 def health() -> dict:
-    """Liveness probe for the deploy platform. Reports whether MX data loaded and the frontend build."""
-    try:
-        mx_data.current()
-        mx_ready = True
-    except Exception:
-        mx_ready = False
-    return {"status": "ok", "version": API_VERSION, "mx_data": mx_ready,
+    """Liveness probe for the deploy platform. Non-blocking: does not trigger data load."""
+    # mx_data.current() is lru_cached; check if it was already loaded without triggering a load.
+    import functools
+    cache_info = mx_data.current.cache_info()
+    return {"status": "ok", "version": API_VERSION,
+            "mx_data": cache_info.currsize > 0,
             "frontend": frontend_dist().exists()}
 
 

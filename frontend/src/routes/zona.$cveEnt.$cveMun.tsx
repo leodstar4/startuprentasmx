@@ -19,6 +19,7 @@ import { formatInt, formatMXN, formatPct, type MxCopy } from "@/lib/mx-i18n";
 import { formatDate } from "@/lib/dates";
 import { Button } from "@/components/ui/button";
 import { MxMap, zoneKey, type MxMapZone } from "@/components/mx/MxMap";
+import { ListingCard } from "@/components/mx/ListingCard";
 
 export const Route = createFileRoute("/zona/$cveEnt/$cveMun")({
   component: ZonePage,
@@ -270,23 +271,5 @@ function ListingsSection({ cveEnt, cveMun, zoneName, listings }: { cveEnt: strin
         </>
       )}
     </section>
-  );
-}
-
-function ListingCard({ listing }: { listing: MxListing }) {
-  const { mx, lang } = useMx();
-  return (
-    <Link to="/vivienda/$id" params={{ id: listing.id }}
-      className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50 hover:bg-accent/30">
-      <div className="flex h-24 items-center justify-center rounded-lg bg-primary/5 text-primary/40" aria-hidden><Home className="h-8 w-8" /></div>
-      <p className="text-lg font-bold text-foreground">{mx.listingCard.perMonth(formatMXN(listing.monthly_rent_mxn, lang))}</p>
-      <p className="font-medium">{listing.title}</p>
-      <p className="text-sm text-muted-foreground">
-        {mx.listingCard.bedrooms(listing.bedrooms)} · {mx.listingCard.bathrooms(Number(listing.bathrooms))}
-        {listing.area_m2 ? ` · ${mx.listingCard.area(String(listing.area_m2))}` : ""}
-      </p>
-      <p className="text-sm text-muted-foreground">{listing.colonia}</p>
-      <span className="mt-1 inline-flex w-fit items-center rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">{mx.listingCard.userPublished}</span>
-    </Link>
   );
 }

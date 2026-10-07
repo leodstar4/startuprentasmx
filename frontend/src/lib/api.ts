@@ -301,6 +301,7 @@ export interface MxListing {
   area_m2: number | null;
   furnished: boolean;
   pets_allowed: boolean | null;
+  image_url?: string | null;
   available_from: string;
   contact_name: string;
   published_by: "usuario";
@@ -542,7 +543,7 @@ export interface MxEvidence {
 export interface MxListingCreate {
   cve_ent: string; cve_mun: string; cp: string; colonia: string; title: string; description: string;
   monthly_rent_mxn: number; deposit_mxn: number | null; bedrooms: number; bathrooms: number; area_m2: number | null;
-  furnished: boolean; pets_allowed: boolean | null; available_from: string; contact_name: string; contact_email: string;
+  furnished: boolean; pets_allowed: boolean | null; image_url?: string | null; available_from: string; contact_name: string; contact_email: string;
   truthfulness_consent: true; privacy_consent: true;
 }
 

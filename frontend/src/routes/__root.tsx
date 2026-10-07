@@ -50,8 +50,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rental Housing Law Navigator" },
-      { name: "description", content: "Find which rental housing rules apply at an address, in English and Spanish." },
+      { title: "Renta MX — Rentar y vivir en México" },
+      { name: "description", content: "Marketplace transparente para rentar vivienda en México: mapa de zonas, precios reales, checklist legal verificado y generación de contratos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

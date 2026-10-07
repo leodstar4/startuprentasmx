@@ -353,7 +353,14 @@ def verify_all(data_root: Path | None = None, corpus_root: Path | None = None) -
         seen.add(req.id)
         verify_requirement(req, stem, sources, index, res)
     zone_errs = _zones_errors(data_root, sources)
-    return ValidationReport(sources, results, errors + zone_errs, warnings)
+    report = ValidationReport(sources, results, errors + zone_errs, warnings)
+    # Free the full legal texts from the module-level cache: they are large (several MB each for
+    # CCF, LISR, CCom, etc.) and are never needed again at runtime — the API serves only the
+    # already-verified requirement metadata, not the raw legal text. Clearing after verification
+    # keeps peak RAM low enough for the Render free tier (512 MB).
+    from .sources import _TEXT_CACHE
+    _TEXT_CACHE.clear()
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -137,6 +137,7 @@ class ListingCreate(_Strict):
     area_m2: Decimal | None = Field(None, gt=0, le=100_000, decimal_places=2)
     furnished: bool = False
     pets_allowed: bool | None = None
+    image_url: str | None = None
     available_from: date
     contact_name: Line(120)
     contact_email: Email
@@ -154,14 +155,15 @@ class ListingPublic(BaseModel):
     cp: str
     colonia: str
     title: str
-    description: str
+    description: str = ""
     monthly_rent_mxn: Decimal
-    deposit_mxn: Decimal | None
+    deposit_mxn: Decimal | None = None
     bedrooms: int
     bathrooms: Decimal
-    area_m2: Decimal | None
-    furnished: bool
-    pets_allowed: bool | None
+    area_m2: Decimal | None = None
+    furnished: bool = False
+    pets_allowed: bool | None = None
+    image_url: str | None = None
     available_from: date
     contact_name: str
     published_by: Literal["usuario"] = "usuario"

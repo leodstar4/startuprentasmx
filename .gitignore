@@ -3,15 +3,24 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Runtime output directories (generados en build / tests; NO commitear)
 out/
+out_demo/
+
 .pytest_cache/
 static/
 frontend/node_modules/
 frontend/dist/
-frontend/.output/
+frontend/.output/       # build output del frontend (generado por `bun run build`)
 frontend/.wrangler/
 frontend/.tanstack/
+.netlify/
 .DS_Store
 
-# INEGI raw downloads (large; url+sha256 in corpus_mx/manifest_inegi.json)
+# INEGI raw downloads (large; url+sha256 en corpus_mx/manifest_inegi.json)
 corpus_mx/inegi/raw/
+
+# NOTA: corpus_demo/ NO está ignorado — se incluye en el repo para que
+# el deploy de Render y el CI funcionen con el corpus recortado sin descargar nada.
+# Si en algún momento pesa demasiado, muévelo a R2/S3 y ajusta MX_CORPUS_DIR.
