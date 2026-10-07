@@ -1,0 +1,428 @@
+import type { MxListing, MxListings, MxStates, MxListingDetail, MxZoneDetail } from "./api";
+
+export const MOCK_DEMO_LISTINGS: MxListing[] = [
+  {
+    id: "demo-roma-norte-01",
+    created_at: "2026-10-06T12:00:00Z",
+    cve_ent: "09",
+    cve_mun: "015",
+    cp: "06700",
+    colonia: "Roma Norte",
+    title: "Depto contemporáneo con balcón en Roma Norte",
+    description: "Hermoso departamento exterior con balcón en el corazón cultural de Roma Norte. Sala-comedor de concepto abierto, cocina equipada con cubierta de cuarzo, recámara principal con vestidor y baño en suite. Edificio pet-friendly con elevador, roof garden común y seguridad privada 24/7.",
+    monthly_rent_mxn: 22500,
+    deposit_mxn: 22500,
+    bedrooms: 2,
+    bathrooms: 2,
+    area_m2: 82,
+    furnished: true,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-01",
+    contact_name: "María González",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-condesa-02",
+    created_at: "2026-10-06T12:05:00Z",
+    cve_ent: "09",
+    cve_mun: "015",
+    cp: "06760",
+    colonia: "Condesa",
+    title: "Penthouse art déco arbolado frente a Parque México",
+    description: "Extraordinario penthouse en edificio clásico catalogado sobre Amsterdam. Techos altos, pisos de madera original restaurada, terraza privada con vista al follaje urbano y acabados de lujo. Incluye bodega y estacionamiento.",
+    monthly_rent_mxn: 29000,
+    deposit_mxn: 29000,
+    bedrooms: 2,
+    bathrooms: 2,
+    area_m2: 105,
+    furnished: false,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-15",
+    contact_name: "Roberto Castro",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-juarez-03",
+    created_at: "2026-10-06T12:10:00Z",
+    cve_ent: "09",
+    cve_mun: "015",
+    cp: "06600",
+    colonia: "Juárez",
+    title: "Estudio ejecutivo amueblado cerca de Reforma",
+    description: "Estudio minimalista completamente amueblado y equipado listo para habitar. Ideal para nómadas digitales o profesionistas jóvenes. A 3 cuadras del Ángel de la Independencia. Edificio inteligente con coworking y gimnasio.",
+    monthly_rent_mxn: 14500,
+    deposit_mxn: 14500,
+    bedrooms: 1,
+    bathrooms: 1,
+    area_m2: 45,
+    furnished: true,
+    pets_allowed: false,
+    image_url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-15",
+    contact_name: "Carlos Mendoza",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-del-valle-04",
+    created_at: "2026-10-06T12:15:00Z",
+    cve_ent: "09",
+    cve_mun: "014",
+    cp: "03100",
+    colonia: "Del Valle Centro",
+    title: "Casa familiar con jardín privado y garage doble",
+    description: "Residencia de estilo colonial moderno en calle tranquila y arbolada. Dos niveles, amplio jardín privado ideal para mascotas o convivencias, estudio/oficina independiente y portón automático para dos autos.",
+    monthly_rent_mxn: 36000,
+    deposit_mxn: 72000,
+    bedrooms: 3,
+    bathrooms: 2.5,
+    area_m2: 195,
+    furnished: false,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-12-01",
+    contact_name: "Sofía Ramírez",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-lomas-05",
+    created_at: "2026-10-06T12:20:00Z",
+    cve_ent: "09",
+    cve_mun: "016",
+    cp: "11000",
+    colonia: "Lomas de Chapultepec",
+    title: "Residencia de lujo con vistas panorámicas",
+    description: "Propiedad de alta gama en exclusivo condominio horizontal con vigilancia estricta 24 horas. Acabados en mármol, cocina italiana de diseñador, calefacción hidrónica, terraza con vista a la cañada y 3 lugares de estacionamiento.",
+    monthly_rent_mxn: 62000,
+    deposit_mxn: 124000,
+    bedrooms: 3,
+    bathrooms: 3.5,
+    area_m2: 240,
+    furnished: true,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-01",
+    contact_name: "Andrés Villanueva",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-narvarte-06",
+    created_at: "2026-10-06T12:25:00Z",
+    cve_ent: "09",
+    cve_mun: "014",
+    cp: "03020",
+    colonia: "Narvarte Poniente",
+    title: "Depto nuevo muy iluminado con roof top común",
+    description: "Excelente departamento en piso 4 con vista despejada. Sala-comedor amplia, cocina abierta, persianas black-out incluidas, estacionamiento techado y elevador. A solo 5 minutos caminando de centros comerciales.",
+    monthly_rent_mxn: 17800,
+    deposit_mxn: 17800,
+    bedrooms: 2,
+    bathrooms: 2,
+    area_m2: 78,
+    furnished: false,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1502005229762-ae1b465ab37d?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-20",
+    contact_name: "Fernanda Morales",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-guerrero-07",
+    created_at: "2026-10-06T12:30:00Z",
+    cve_ent: "09",
+    cve_mun: "015",
+    cp: "06030",
+    colonia: "Guerrero",
+    title: "Loft contemporáneo remodelado cerca de Bellas Artes",
+    description: "Loft con diseño industrial cálido, techos altos, muros de ladrillo aparente y ventanales acústicos dobles. Muy cerca del centro histórico y metro Garibaldi/Bellas Artes. Excelente relación calidad/precio.",
+    monthly_rent_mxn: 11000,
+    deposit_mxn: 11000,
+    bedrooms: 1,
+    bathrooms: 1,
+    area_m2: 50,
+    furnished: true,
+    pets_allowed: false,
+    image_url: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-01",
+    contact_name: "Laura Torres",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-coyoacan-08",
+    created_at: "2026-10-06T12:35:00Z",
+    cve_ent: "09",
+    cve_mun: "003",
+    cp: "04000",
+    colonia: "Del Carmen",
+    title: "Casona colonial con patio privado en Coyoacán",
+    description: "Encantador hogar colonial a unas cuadras de la plaza Hidalgo y los Viveros de Coyoacán. Patio central con fuente de cantera, vigas de madera, cocina rústica mexicana y atmósfera de tranquilidad inigualable.",
+    monthly_rent_mxn: 24000,
+    deposit_mxn: 24000,
+    bedrooms: 2,
+    bathrooms: 2,
+    area_m2: 110,
+    furnished: false,
+    pets_allowed: true,
+    image_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-10",
+    contact_name: "Guillermo Pardo",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+  {
+    id: "demo-polanco-09",
+    created_at: "2026-10-06T12:40:00Z",
+    cve_ent: "09",
+    cve_mun: "016",
+    cp: "11560",
+    colonia: "Polanco",
+    title: "Suite de lujo en Polanco V Sección con alberca y gym",
+    description: "Residencia de prestigio en torre de clase mundial sobre Horacio. Amenidades completas: alberca climatizada, gimnasio de última generación, spa, salón de eventos y concierge 24 horas. Pisos de madera de ingeniería y acabados premium.",
+    monthly_rent_mxn: 48000,
+    deposit_mxn: 48000,
+    bedrooms: 2,
+    bathrooms: 2.5,
+    area_m2: 135,
+    furnished: true,
+    pets_allowed: false,
+    image_url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
+    available_from: "2026-11-05",
+    contact_name: "Valentina Sotomayor",
+    published_by: "usuario",
+    verified_owner: false,
+  },
+];
+
+export const MOCK_STATES: MxStates = {
+  count: 32,
+  states: [
+    { cve_ent: "09", name: "Ciudad de México", abbr: "CDMX", legal_coverage: "estatal_verificada", listings_count: 9, municipios: 16 },
+    { cve_ent: "15", name: "México", abbr: "Edomex", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 125 },
+    { cve_ent: "14", name: "Jalisco", abbr: "Jal.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 125 },
+    { cve_ent: "19", name: "Nuevo León", abbr: "N.L.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 51 },
+    { cve_ent: "21", name: "Puebla", abbr: "Pue.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 217 },
+    { cve_ent: "22", name: "Querétaro", abbr: "Qro.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 18 },
+    { cve_ent: "11", name: "Guanajuato", abbr: "Gto.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 46 },
+    { cve_ent: "31", name: "Yucatán", abbr: "Yuc.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 106 },
+    { cve_ent: "23", name: "Quintana Roo", abbr: "Q. Roo", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 11 },
+    { cve_ent: "02", name: "Baja California", abbr: "B.C.", legal_coverage: "estatal_verificada", listings_count: 0, municipios: 7 },
+    { cve_ent: "30", name: "Veracruz", abbr: "Ver.", legal_coverage: "solo_federal", listings_count: 0, municipios: 212 },
+    { cve_ent: "01", name: "Aguascalientes", abbr: "Ags.", legal_coverage: "solo_federal", listings_count: 0, municipios: 11 },
+  ],
+  disclaimer: "No es asesoría legal. Renta MX es un prototipo informativo que muestra fuentes oficiales con su cita literal.",
+};
+
+export function getMockDemoResponse(path: string): unknown | null {
+  const cleanPath = path.split("?")[0].replace(/\/+$/, "");
+
+  if (cleanPath === "/mx/listings") {
+    return {
+      count: MOCK_DEMO_LISTINGS.length,
+      total_unfiltered: MOCK_DEMO_LISTINGS.length,
+      empty_state: false,
+      listings: MOCK_DEMO_LISTINGS,
+      listing_notice: "Anuncio publicado por un usuario. Renta MX verifica la integridad de los requisitos legales.",
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath.startsWith("/mx/listings/")) {
+    const id = cleanPath.split("/").pop();
+    const found = MOCK_DEMO_LISTINGS.find((l) => l.id === id) || MOCK_DEMO_LISTINGS[0];
+    return {
+      ...found,
+      listing_notice: "Anuncio de demostración verificado para Ciudad de México.",
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath === "/mx/states") {
+    return MOCK_STATES;
+  }
+
+  if (cleanPath === "/mx/health") {
+    return {
+      status: "ok",
+      version: "2.0.0",
+      mx_data: true,
+      frontend: true,
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath === "/mx/zones") {
+    return {
+      count: 4,
+      zones: [
+        { cve_ent: "09", cve_mun: "015", name: "Cuauhtémoc (Roma, Condesa, Juárez)", listings_count: 5 },
+        { cve_ent: "09", cve_mun: "014", name: "Benito Juárez (Del Valle, Narvarte)", listings_count: 2 },
+        { cve_ent: "09", cve_mun: "016", name: "Miguel Hidalgo (Polanco, Lomas)", listings_count: 2 },
+        { cve_ent: "09", cve_mun: "003", name: "Coyoacán (Del Carmen)", listings_count: 1 },
+      ],
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath.startsWith("/mx/zones/")) {
+    const parts = cleanPath.split("/");
+    const cveEnt = parts[3] || "09";
+    const cveMun = parts[4] || "015";
+    const munName = cveMun === "015" ? "Cuauhtémoc" : cveMun === "014" ? "Benito Juárez" : cveMun === "016" ? "Miguel Hidalgo" : "Coyoacán";
+    const zoneListings = MOCK_DEMO_LISTINGS.filter((l) => l.cve_ent === cveEnt && (!cveMun || l.cve_mun === cveMun));
+
+    return {
+      state: { cve_ent: "09", name: "Ciudad de México", legal_coverage: "estatal_verificada" },
+      zone: {
+        cve_ent: "09",
+        cve_mun: cveMun,
+        name: munName,
+        stats: {
+          pct_viviendas_alquiladas: { value: 34.2, source: "Censo 2020 INEGI", year: 2020 },
+        },
+        has_coords: true,
+        lat: 19.412,
+        lon: -99.165,
+        coord: { source: "INEGI" },
+      },
+      listings: zoneListings.length ? zoneListings : MOCK_DEMO_LISTINGS,
+      listings_count: zoneListings.length || MOCK_DEMO_LISTINGS.length,
+      empty_state: false,
+      price_summary: {
+        count: 9,
+        currency: "MXN",
+        basis: "viviendas_publicadas",
+        min_count_for_stats: 3,
+        as_of: "2026-10-06",
+        has_stats: true,
+        min: 11000,
+        median: 24000,
+        max: 62000,
+      },
+      requirements_summary: {
+        count: 25,
+        category_counts: { formalidad_contrato: 6, deposito_garantia: 4, precio_pago: 7, terminacion: 8 },
+      },
+      listing_notice: "Inmuebles en zona verificada.",
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath.startsWith("/mx/requirements/")) {
+    const cveEnt = cleanPath.split("/")[3] || "09";
+    return {
+      cve_ent: cveEnt,
+      state: "Ciudad de México",
+      abbr: "CDMX",
+      lang: "es",
+      count: 25,
+      legal_coverage: "estatal_verificada",
+      categories: {
+        "Formalidad del Contrato": [
+          {
+            id: "CDMX-FORM-01",
+            level: "estatal",
+            jurisdiction: "CDMX",
+            category: "formalidad",
+            kind: "ley",
+            is_law: true,
+            title: "Contrato forzoso por escrito",
+            summary: "El arrendamiento de vivienda debe otorgarse siempre por escrito.",
+            summary_caveat: "",
+            citation: "Art. 2448-F Código Civil para el Distrito Federal",
+            quote: "El contrato de arrendamiento debe otorgarse por escrito, la falta de esta formalidad se imputará al arrendador.",
+            quote_lang: "es",
+            match_type: "exact",
+            applies_to_contract: true,
+            checks: [],
+            reviewed_by: "Equipo Legal Renta MX",
+            doc_id: "CCDF",
+            doc_title: "Código Civil para el Distrito Federal",
+            publisher: "Gaceta Oficial de la Ciudad de México",
+            url: "https://data.consejeria.cdmx.gob.mx",
+            retrieved_at: "2026-10-01",
+            last_reform: "2024",
+          },
+          {
+            id: "CDMX-DEP-01",
+            level: "estatal",
+            jurisdiction: "CDMX",
+            category: "deposito",
+            kind: "ley",
+            is_law: true,
+            title: "Límites al depósito en garantía",
+            summary: "El depósito se destina exclusivamente a garantizar desperfectos o rentas no pagadas.",
+            summary_caveat: "",
+            citation: "Art. 2425 y concordantes CCDF",
+            quote: "El arrendatario está obligado a satisfacer la renta en la forma y tiempo convenidos y restituir el bien en el estado en que lo recibió.",
+            quote_lang: "es",
+            match_type: "exact",
+            applies_to_contract: true,
+            checks: [],
+            reviewed_by: "Equipo Legal Renta MX",
+            doc_id: "CCDF",
+            doc_title: "Código Civil para el Distrito Federal",
+            publisher: "Gaceta Oficial de la Ciudad de México",
+            url: "https://data.consejeria.cdmx.gob.mx",
+            retrieved_at: "2026-10-01",
+            last_reform: "2024",
+          },
+        ],
+      },
+      category_counts: { formalidad: 1, deposito: 1 },
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  if (cleanPath.startsWith("/mx/contracts/")) {
+    const contractId = cleanPath.split("/")[3] || "demo-contract";
+    return {
+      contract_id: contractId,
+      template_version: "2026.1",
+      created_at: new Date().toISOString(),
+      cve_ent: "09",
+      cve_mun: "015",
+      estado: "Ciudad de México",
+      municipio: "Cuauhtémoc",
+      listing_id: "demo-roma-norte-01",
+      coverage: "estatal_verificada",
+      notice: null,
+      text: "CONTRATO DE ARRENDAMIENTO PARA CASA HABITACIÓN EN LA CIUDAD DE MÉXICO...",
+      text_lang: "es",
+      sha256: "b10a8db164e0754105b7a99be72e3fe5aa065ced16e6d15ef79222cf61a5b821",
+      parties: {
+        arrendador: { full_name: "María González", email_masked: "m***@rentamx.demo", email_sha256: "abc" },
+        arrendatario: { full_name: "Inquilino Verificado", email_masked: "i***@gmail.com", email_sha256: "def" },
+      },
+      clauses: [
+        { n: 1, ordinal: "PRIMERA", key: "objeto", title: "Objeto y Destino Habitacional", basis: "ley", text: "El Arrendador da en arrendamiento al Arrendatario el inmueble ubicado en la Ciudad de México, con destino exclusivo para casa habitación.", requirement_ids: [] },
+        { n: 2, ordinal: "SEGUNDA", key: "renta", title: "Renta Mensual y Forma de Pago", basis: "ley", text: "El Arrendatario se obliga a pagar puntualmente la renta mensual pactada sin deducción alguna.", requirement_ids: [] },
+        { n: 3, ordinal: "TERCERA", key: "deposito", title: "Depósito en Garantía", basis: "ley", text: "El Arrendatario entrega en este acto la cantidad correspondiente a un mes de depósito para garantizar el cumplimiento de sus obligaciones.", requirement_ids: [] },
+        { n: 4, ordinal: "CUARTA", key: "vigencia", title: "Plazo y Vigencia", basis: "ley", text: "El presente contrato tendrá una vigencia forzosa de 12 meses a partir de la fecha de entrega del inmueble.", requirement_ids: [] },
+      ],
+      omitted_clauses: [],
+      signature_status: {
+        overall: "pendiente",
+        roles: { arrendador: "pendiente", arrendatario: "pendiente" },
+        per_signature: [],
+        chain_ok: true,
+        valid_count: 0,
+        required_count: 2,
+        sha256_current: "b10a8db164e0754105b7a99be72e3fe5aa065ced16e6d15ef79222cf61a5b821",
+        sha256_at_creation: "b10a8db164e0754105b7a99be72e3fe5aa065ced16e6d15ef79222cf61a5b821",
+        text_changed: false,
+      },
+      signatures: [],
+      disclaimer: MOCK_STATES.disclaimer,
+    };
+  }
+
+  return null;
+}

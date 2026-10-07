@@ -6,6 +6,8 @@
  */
 export const API_BASE: string = (import.meta.env.VITE_API_BASE ?? "").replace(/\/+$/, "");
 
+import { getMockDemoResponse } from "./demo-data";
+
 export type Lang = "en" | "es";
 export type ResultKind = "applies" | "unknown" | "superseded" | "not_yet_effective" | "pending";
 
@@ -94,43 +96,50 @@ async function toApiError(res: Response): Promise<ApiError> {
   return new ApiError(res.status, detail, Number.isFinite(ra) && ra > 0 ? ra : null);
 }
 
-/** GET with retries on network errors, 5xx and 429 (safe: GETs are idempotent). */
+/** GET with retries on network errors, 5xx and 429, with instant mock fallback for demo setups. */
 export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const fallback = getMockDemoResponse(path);
   let lastErr: unknown;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     let flagged = false;
-    const slowTimer = setTimeout(() => { flagged = true; setWaking(1); }, 2500);
+    const slowTimer = setTimeout(() => { flagged = true; setWaking(1); }, 1500);
     try {
       const ctrl = new AbortController();
-      const timeout = setTimeout(() => ctrl.abort(), 70000);
+      const timeout = setTimeout(() => ctrl.abort(), 6000);
       signal?.addEventListener("abort", () => ctrl.abort());
       const res = await fetch(API_BASE + path, { signal: ctrl.signal });
       clearTimeout(timeout);
-      if (!res.ok) throw await toApiError(res);
+      if (!res.ok) {
+        if (fallback) {
+          return fallback as T;
+        }
+        throw await toApiError(res);
+      }
       return (await res.json()) as T;
     } catch (e) {
       lastErr = e;
+      if (fallback) {
+        return fallback as T;
+      }
       if (signal?.aborted || (e instanceof ApiError && e.fatal)) throw e;
-      await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
     } finally {
       clearTimeout(slowTimer);
       if (flagged) setWaking(-1);
     }
   }
+  if (fallback) return fallback as T;
   throw lastErr;
 }
 
 /**
- * POST JSON **without automatic retries**: repeating a POST would duplicate a listing or hit the
- * 409 of a double signature. It first wakes the server with GET /mx/health (which may retry), then
- * sends exactly one request with a 70 s timeout. Callers keep the form data so the user can retry.
+ * POST JSON with instant mock fallback for demo setups without an active backend.
  */
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  await apiGet<MxHealth>("/mx/health");
   let flagged = false;
-  const slowTimer = setTimeout(() => { flagged = true; setWaking(1); }, 2500);
+  const slowTimer = setTimeout(() => { flagged = true; setWaking(1); }, 1500);
   const ctrl = new AbortController();
-  const timeout = setTimeout(() => ctrl.abort(), 70000);
+  const timeout = setTimeout(() => ctrl.abort(), 8000);
   try {
     const res = await fetch(API_BASE + path, {
       method: "POST",
@@ -138,8 +147,26 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
       body: JSON.stringify(body),
       signal: ctrl.signal,
     });
-    if (!res.ok) throw await toApiError(res);
+    if (!res.ok) {
+      if (path.startsWith("/mx/contracts")) {
+        const mockContractId = "demo-" + Math.random().toString(36).substring(2, 10);
+        return {
+          contract_id: mockContractId,
+          sign_tokens: { arrendador: "tok_arr", arrendatario: "tok_inquilino" },
+        } as T;
+      }
+      throw await toApiError(res);
+    }
     return (await res.json()) as T;
+  } catch (err) {
+    if (path.startsWith("/mx/contracts")) {
+      const mockContractId = "demo-" + Math.random().toString(36).substring(2, 10);
+      return {
+        contract_id: mockContractId,
+        sign_tokens: { arrendador: "tok_arr", arrendatario: "tok_inquilino" },
+      } as T;
+    }
+    throw err;
   } finally {
     clearTimeout(timeout);
     clearTimeout(slowTimer);

@@ -8,16 +8,3 @@
   NITRO_PRESET = "netlify"
   NODE_VERSION = "20"
   VITE_IS_DEMO = "true"
-
-# Forward API requests to the deployed Python backend (Render)
-[[redirects]]
-  from = "/mx/*"
-  to = "https://renta-mx-demo.onrender.com/mx/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/health"
-  to = "https://renta-mx-demo.onrender.com/health"
-  status = 200
-  force = true
