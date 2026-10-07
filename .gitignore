@@ -1,0 +1,17 @@
+.env
+.cache/
+__pycache__/
+*.pyc
+.venv/
+out/
+.pytest_cache/
+static/
+frontend/node_modules/
+frontend/dist/
+frontend/.output/
+frontend/.wrangler/
+frontend/.tanstack/
+.DS_Store
+
+# INEGI raw downloads (large; url+sha256 in corpus_mx/manifest_inegi.json)
+corpus_mx/inegi/raw/

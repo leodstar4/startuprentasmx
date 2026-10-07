@@ -1,0 +1,13 @@
+# Renta MX — Python monolith runtime. No LLM/network at runtime (Regla Cero: $0 LLM).
+pydantic==2.13.5
+pyyaml==6.0.3
+fastapi==0.142.2
+uvicorn==0.54.0
+
+# Tests (FastAPI TestClient uses httpx) and local dev.
+httpx==0.28.1
+pytest==9.1.1
+
+# Persistent store on PostgreSQL (Supabase/Render/Neon). Imported lazily by mx/store.py only when
+# DATABASE_URL points at Postgres; SQLite uses the stdlib and the default JSON store needs nothing.
+psycopg[binary]==3.3.6

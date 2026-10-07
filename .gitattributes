@@ -1,0 +1,17 @@
+# Byte-exact files: hashes (text_sha256, prompt_sha256) and byte-identical reproduction
+# depend on them, so git must never convert their line endings.
+participant-final-no-hour16[[:space:]]3/** -text
+snapshots/** -text
+tests/fixtures/** -text
+prompts/*.md -text
+# Module B generated data (raw Census responses, versioned outputs): keep LF as written.
+data/geocode_raw/** -text
+data/*.json -text
+corpus/new/** -text
+# Spoken summaries (api/audio.py): binary audio + its manifest
+data/audio/**/*.mp3 binary
+data/audio/manifest.json -text
+docs/*.pdf binary
+# Renta MX: manifests store sha256/text_sha256 of these files, so bytes must not change on checkout.
+corpus_mx/** -text
+data/mx/** -text

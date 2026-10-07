@@ -1,0 +1,45 @@
+# Render blueprint — Renta MX (Python monolith: FastAPI serves /mx/* AND the built frontend).
+#
+# Regla Cero: the build runs `python -m mx.verify`; a broken legal quote fails the deploy.
+# No ANTHROPIC_API_KEY, no LLM, no network at runtime.
+#
+# Persistence: set DATABASE_URL to a Supabase (or Render) Postgres connection string so listings,
+# contracts and signatures survive restarts (mx/store.py SqlStore). Without it, data lives on an
+# ephemeral disk and is lost on restart.
+#
+# "No se duerme": the `free` plan sleeps after ~15 min idle and its disk is ephemeral. For a site
+# that must stay up and keep data, use the `starter` plan AND a managed Postgres (Supabase free is
+# fine to start; it only pauses after ~1 week of total inactivity).
+services:
+  - type: web
+    name: renta-mx
+    runtime: python
+    plan: free          # change to `starter` (~$7/mo) for an always-on server
+    # Build: install Python deps, run the Regla Cero gate, then build the frontend (bun) so the
+    # monolith can serve it from frontend/.output/public.
+    buildCommand: |
+      pip install -r requirements.txt
+      python -m mx.verify
+      curl -fsSL https://bun.sh/install | bash
+      export PATH="$HOME/.bun/bin:$PATH"
+      cd frontend && bun install && bun run build && cd ..
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.10"
+      # Served by the monolith itself, so same-origin needs no CORS. Add extra EXACT origins here
+      # (comma-separated) only for split setups; *.pages.dev / lovable are allowed by regex.
+      - key: ALLOWED_ORIGINS
+        value: ""
+      # Where the built frontend lives (served as StaticFiles by api/main.py).
+      - key: FRONTEND_DIST
+        value: "frontend/.output/public"
+      # Salt for the hashed client IP in /mx signature evidence (never the plain IP). Keep stable.
+      - key: MX_IP_SALT
+        generateValue: true
+      # Persistent store (Supabase Postgres). Paste the connection string of your Supabase project
+      # (Settings -> Database -> Connection string -> URI; use the pooler host for serverless).
+      # Leave unset to run with the ephemeral JSON store (demo only).
+      - key: DATABASE_URL
+        sync: false
